@@ -1,0 +1,1 @@
+select distinct status_id from utility.approval_process_main
