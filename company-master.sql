@@ -103,19 +103,37 @@ SELECT
     LEFT(TRIM(Address3), 150),
     LEFT(TRIM(CINNo), 21),
     CityNo,
-    LEFT(TRIM(PhoneNo), 15),
-    case
-	    when phoneNo is not null
-	    then 2
-	    else null
-	end,
+    CASE 
+        WHEN NULLIF(TRIM(PhoneNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(PhoneNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(PhoneNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(TRIM(CorporateOfficeAddress), 500),
-    LEFT(TRIM(CorporateOfficePhone), 15),
-    case
-	    when CorporateOfficePhone is not null
-	    then 2
-	    else null
-	end,
+    CASE 
+        WHEN NULLIF(TRIM(CorporateOfficePhone), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(CorporateOfficePhone), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(CorporateOfficePhone), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(TRIM(CorporateOfficeEmail), 100),
     CountryNo,
     null as db_config_id,
@@ -136,12 +154,21 @@ SELECT
     LEFT(TRIM(PinCodeCompany), 10),
     LEFT(TRIM(PrintingName), 100),
     LEFT(TRIM(RegdOfficeAddress), 500),
-    LEFT(TRIM(RegdOfficePhone), 15),
-    case
-	    when RegdOfficePhone is not null
-	    then 2
-	    else null
-	end,
+    CASE 
+        WHEN NULLIF(TRIM(RegdOfficePhone), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(RegdOfficePhone), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(RegdOfficePhone), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(TRIM(RegdOfficeEmail), 100),
     StateNo,
     LEFT(TRIM(TallyCompanyName), 100),

@@ -841,7 +841,11 @@ SELECT
     COALESCE(rfq.IsPL, FALSE),
     NULLIF(LEFT(TRIM(rfq.RFQEmailSubject),500), ''),
     NULLIF(TRIM(rfq.ContactPersonName), ''),
-    NULLIF('+91' || LEFT(TRIM(rfq.ContactNo), 12), '+91'),
+    CASE 
+        WHEN NULLIF(TRIM(rfq.ContactNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(rfq.ContactNo), 12)
+        ELSE NULL 
+    END,
     CASE
         WHEN NULLIF(TRIM(rfq.ContactNo), '') IS NOT NULL
         THEN (
@@ -1193,8 +1197,11 @@ SELECT
 
     NULLIF(TRIM(im.RequestedBy), ''),
 
-    NULLIF('+91' || LEFT(TRIM(im.RequstedByContactNo), 12), '+91'),
-
+    CASE 
+        WHEN NULLIF(TRIM(im.RequstedByContactNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(im.RequstedByContactNo), 12)
+        ELSE NULL 
+    END,
     CASE
         WHEN NULLIF(TRIM(im.RequstedByContactNo), '') IS NOT NULL
         THEN (

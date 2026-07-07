@@ -77,12 +77,21 @@ SELECT
     NULL AS business_description,
     case when vld.BusinessTypeNo=0 then 20 else vld.BusinessTypeNo end,
     vld.CityNo,
-    LEFT(TRIM(COALESCE(vld.PhoneNo, '')), 15),
-    case
-	    when phoneNo is not null
-	    then 2
-	    else null
-	end,
+    CASE 
+        WHEN NULLIF(TRIM(vld.PhoneNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(vld.PhoneNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(vld.PhoneNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     vld.CountryNo,
     COALESCE(vld.CreatedBy, 1),
     COALESCE(

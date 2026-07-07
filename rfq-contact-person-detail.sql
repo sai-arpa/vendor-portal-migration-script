@@ -17,12 +17,21 @@ SELECT
     rvd.VendorContactNo,
     vcp.contact_person_name,
     vcp.email,
-    vcp.contact_no,
-    case
-    	when vcp.contact_no is not null
-    		then (select id from masterdata.country_master where lower(country_name)=lower('india'))
-    	else null
-    end as contact_no_country_id
+    CASE 
+        WHEN NULLIF(TRIM(vcp.ContactNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(vcp.ContactNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(vcp.ContactNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END
 FROM sqlserver_fdw.rfqvendordetail rvd
 LEFT JOIN masterdata.vendor_location_contact_person_detail vcp
     ON vcp.id = rvd.VendorContactNo;

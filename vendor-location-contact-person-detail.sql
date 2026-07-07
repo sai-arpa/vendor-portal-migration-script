@@ -39,11 +39,21 @@ SELECT
         TRIM(COALESCE(Designation, '')),
         50
     ) AS designation,
-    LEFT(
-        TRIM(PhoneNo),
-        15
-    ) AS contact_no,
-    CASE WHEN PhoneNo IS NOT NULL THEN 2 ELSE NULL end,
+    CASE 
+        WHEN NULLIF(TRIM(PhoneNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(PhoneNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(PhoneNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(
         TRIM(COALESCE(Email, '')),
         320

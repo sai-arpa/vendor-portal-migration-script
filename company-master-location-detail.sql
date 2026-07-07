@@ -48,8 +48,21 @@ SELECT
     c.country_id,
     NULL AS pincode,
     LEFT(COALESCE(m.ShippingAddress, ''), 500) AS full_address,
-    c.contact_no,
-    CASE WHEN c.contact_no IS NOT NULL THEN 2 ELSE null end,
+    CASE 
+        WHEN NULLIF(TRIM(c.ContactNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(c.ContactNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(c.ContactNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     COALESCE(m.IsDefault, FALSE),
     1::smallint AS status_id,
     NULL AS status_remarks,

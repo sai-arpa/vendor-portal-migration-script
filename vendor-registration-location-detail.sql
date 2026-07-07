@@ -77,17 +77,21 @@ SELECT
     LEFT(TRIM(COALESCE(l.Address1,'')),100),
     LEFT(TRIM(COALESCE(l.Address2,'')),100),
     LEFT(TRIM(COALESCE(l.Address3,'')),100),
-    LEFT(
-        TRIM(
-            COALESCE(
-                NULLIF(l.MobileNo,''),
-                NULLIF(l.PhoneNo,''),
-                ''
-            )
-        ),
-        15
-    ),
-    case when l.mobileNo is not null or l.phoneNo is not null then 2 else null end,
+    CASE 
+        WHEN COALESCE(NULLIF(TRIM(l.PhoneNo), ''), NULLIF(TRIM(l.MobileNo), '')) IS NOT NULL 
+        THEN '+91' || LEFT(COALESCE(NULLIF(TRIM(l.PhoneNo), ''), NULLIF(TRIM(l.MobileNo), '')), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN COALESCE(NULLIF(TRIM(l.PhoneNo), ''), NULLIF(TRIM(l.MobileNo), '')) IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(TRIM(COALESCE(l.Email,'')),320),
     LEFT(TRIM(COALESCE(l.Website,'')),50),
     l.CountryNo,

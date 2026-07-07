@@ -31,8 +31,21 @@ SELECT
     c.VendorRegLocationNo,
     LEFT(TRIM(c.ContactPersonName),100),
     LEFT(TRIM(COALESCE(c.Designation,'')),50),
-    LEFT(TRIM(COALESCE(c.PhoneNo,'')),15),
-    CASE WHEN c.phoneNo IS NOT NULL THEN 2 ELSE NULL end,
+    CASE 
+        WHEN NULLIF(TRIM(c.PhoneNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(c.PhoneNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(c.PhoneNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     LEFT(TRIM(COALESCE(c.Email,'')),320),
     NULL
 FROM sqlserver_fdw.mvendorregistrationcontactdetail c;

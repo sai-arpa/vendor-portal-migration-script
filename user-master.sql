@@ -116,8 +116,21 @@ SELECT
     l.LoginID,
     'ab',
     COALESCE(NULLIF(l.PrintingName, ''), l.LoginID),
-    LEFT(TRIM(COALESCE(l.PhoneNo, '')), 15),
-    NULL AS contact_no_country_id,
+    CASE 
+        WHEN NULLIF(TRIM(l.PhoneNo), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(l.PhoneNo), 12)
+        ELSE NULL 
+    END,
+    CASE
+        WHEN NULLIF(TRIM(l.PhoneNo), '') IS NOT NULL
+        THEN (
+            SELECT cm.id
+            FROM masterdata.country_master cm
+            WHERE LOWER(cm.country_name) = 'india'
+            LIMIT 1
+        )
+        ELSE NULL
+    END,
     1::smallint AS time_zones_id,
     l.Email,
     l.LoginGUID,
