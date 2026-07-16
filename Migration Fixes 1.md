@@ -248,7 +248,6 @@ VALUES
 (86, 3, 'MC00086', 'IGST @12%', 12.0000, 1, 'IGST', 2, 'Deprecated', 1, NOW(), NULL, NOW()),
 (81, 3, 'MC00081', 'IGST @18', 18.0000, 1, 'IGST', 1, NULL, 1, NOW(), 1, NOW()),
 (84, 3, 'MC00084', 'IGST @28', 28.0000, 1, 'IGST', 1, NULL, 1, NOW(), 1, NOW()),
-
 --SGST--
 (93, 2, 'MC00092', 'SGST @ 0%', 0.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
 (102, 2, 'MC00097', 'SGST @1.5%', 1.5000, 1, 'SGST', 1, NULL, 1, NOW(), NULL, NOW()),
@@ -256,7 +255,6 @@ VALUES
 (82, 2, 'MC00082', 'SGST @ 6%', 6.0000, 1, 'SGST', 2, 'Deprecated', 1, NOW(), 1, NOW()),
 (75, 2, 'MC00075', 'SGST @ 9%', 9.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
 (83, 2, 'MC00083', 'SGST @ 14%', 14.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
-
 --UGST--
 (95, 4, 'MC00094', 'UTGST @ 0%', 0.0000, 1, 'UTGST', 1, NULL, 1, NOW(), 1, NOW()),
 (88, 4, 'MC00087', 'UTGST @ 2.5%', 2.5000, 1, 'UTGST', 1, NULL, 1, NOW(), 1, NOW()),
@@ -1203,35 +1201,22 @@ INSERT INTO purchase.pur_rfq_pr_detail
 OVERRIDING SYSTEM VALUE
 SELECT
     rid.RFQIndentDetailNo,
-
     rid.RFQNo,
-
     rfqid.id,
-
     prid.id,
-
     rid.ItemNo,
-
     rid.MakeNo,
-
     rid.RFQMakeNo,
-
     rid.UnitNo,
-
     rid.UnitNo,
-
     COALESCE(rid.FirstCF, 0),
-
     COALESCE(rid.SecondCF, 0),
-
     COALESCE(rid.RFQQty, 0)
 FROM sqlserver_fdw.rfqindentdetail rid
-
 INNER JOIN purchase.pur_rfq_item_detail rfqid
     ON rfqid.rfq_id = rid.RFQNo
    AND rfqid.item_id = rid.ItemNo
    AND COALESCE(rfqid.make_id, 0) = COALESCE(rid.RFQMakeNo, 0)
-
 INNER JOIN inventory.purchase_request_item_detail prid
     ON prid.pur_req_id = rid.IndentNo
    AND prid.line_no = rid.IndentItemLineNo;

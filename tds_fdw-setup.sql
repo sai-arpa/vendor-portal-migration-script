@@ -19,4 +19,14 @@ OPTIONS (
     password 'user01'
 );
 
+-- {servername=192.168.87.12,port=1433,database=Hfalportal03072026}
 
+
+SELECT
+    srvname,
+    srvowner::regrole AS owner,
+    fdw.fdwname,
+    srvoptions
+FROM pg_foreign_server s
+JOIN pg_foreign_data_wrapper fdw
+ON s.srvfdw = fdw.oid;

@@ -698,51 +698,33 @@ INSERT INTO masterdata.erp_doc_serial_master
 OVERRIDING SYSTEM VALUE
 SELECT
     ds.DocumentSerialNo,
-
     fm.new_form_id,
-
     ds.YearNo,
-
     NULLIF(TRIM(ds.Series), ''),
-
     NULLIF(TRIM(ds.SeriesType), ''),
-
     TRIM(ds.Description),
-
     ds.CompanyNo,
-
     ds.DivisionNo,
-
     CASE
         WHEN COALESCE(ds.Inactive, FALSE)
         THEN 2
         ELSE 1
     END,
-
     NULL,
-
     COALESCE(ds.IsDefault, FALSE),
-
     TRIM(ds.Series),
-
     CONCAT_WS(
         ' - ',
         NULLIF(TRIM(ds.Description), ''),
         NULLIF(TRIM(ds.Series), '')
     ),
 	    1,
-
     NOW(),
-
     1,
-
     NOW()
-
 FROM sqlserver_fdw.documentserial ds
-
 INNER JOIN sqlserver_fdw.formmaster f
     ON UPPER(TRIM(ds.FormCode)) = UPPER(TRIM(f.FormCode))
-
 INNER JOIN migration.form_mapping fm
     ON f.FormNo = fm.old_form_id;
 
@@ -945,6 +927,28 @@ INNER JOIN migration.status_mapping sm
 
 ---- Insert RFQ Purchase Request Detail -----
 -- We have to fix the PR and RFQ item not matching issue before insert----
+CREATE FOREIGN TABLE sqlserver_fdw.rfqindentdetail
+(
+    rfqindentdetailno      INTEGER,
+    rfqno                  INTEGER,
+    indentno               INTEGER,
+    itemno                 INTEGER,
+    makeno                 SMALLINT,
+    firstcf                NUMERIC(7,3),
+    unitno                 SMALLINT,
+    secondcf               NUMERIC(7,3),
+    rfqqty                 NUMERIC(10,3),
+    technicalgradeno       SMALLINT,
+    csbookingqty           NUMERIC(12,3),
+    rfqmakeno              SMALLINT,
+    indentitemlineno       NUMERIC(10,3)
+)
+SERVER sqlserver_fdw
+OPTIONS
+(
+    schema_name 'Purchase',
+    table_name 'RFQIndentDetail'
+);
 
 INSERT INTO purchase.pur_rfq_pr_detail
 (
@@ -964,30 +968,18 @@ INSERT INTO purchase.pur_rfq_pr_detail
 OVERRIDING SYSTEM VALUE
 SELECT
     rid.RFQIndentDetailNo,
-
     rid.RFQNo,
-
     rfqid.id,
-
     prid.id,
-
     rid.ItemNo,
-
     rid.MakeNo,
-
     rid.RFQMakeNo,
-
     rid.UnitNo,
-
     rid.UnitNo,
-
     COALESCE(rid.FirstCF, 0),
-
     COALESCE(rid.SecondCF, 0),
-
     COALESCE(rid.RFQQty, 0)
 FROM sqlserver_fdw.rfqindentdetail rid
-
 INNER JOIN purchase.pur_rfq_item_detail rfqid
     ON rfqid.rfq_id = rid.RFQNo
    AND rfqid.item_id = rid.ItemNo
@@ -1023,11 +1015,8 @@ INSERT INTO purchase.pur_rfq_tnc_detail
 OVERRIDING SYSTEM VALUE
 SELECT
     rtd.RFQTermsDetailNo,
-
     rtd.RFQNo,
-
     rtd.TermsNConditionHeadNo,
-
     LEFT(
         COALESCE(
             NULLIF(TRIM(rtd.TermsNCondition), ''),
@@ -1035,7 +1024,6 @@ SELECT
         ),
         1000
     )
-
 FROM sqlserver_fdw.rfqtermsnconditiondetail rtd;
 
 
@@ -1059,9 +1047,7 @@ INSERT INTO purchase.pur_rfq_company_detail
 )
 SELECT
     rcd.RFQNo,
-
     rcd.CompanyNo
-
 FROM sqlserver_fdw.rfqcompanydetail rcd;
 
 
@@ -1160,43 +1146,28 @@ INSERT INTO inventory.purchase_request_main
 OVERRIDING SYSTEM VALUE
 SELECT
     im.IndentNo,
-
     im.YearNo,
-
     im.CompanyNo,
-
     im.DivisionNo,
-
     2,
-
     COALESCE(NULLIF(TRIM(im.PortalDocumentNoYearly), ''), TRIM(im.DocumentNoYearly)),
-
     COALESCE(
         migration.parse_sqlserver_datetime(im.DocumentDate)::date,
         CURRENT_DATE
     ),
-
     NULL,
-
     TRIM(im.DocumentNoYearly),
-
     im.DocumentStatusNo,
-
     im.DeptNo,
-
 	 CASE im.IndentTypeNo
         WHEN 1 THEN 1
         WHEN 2 THEN 2
 		WHEN 3 THEN 3
         WHEN 7 THEN 4
     END,
-
     NULLIF(TRIM(im.ReferenceNo), ''),
-
     migration.parse_sqlserver_datetime(im.ReferenceDate)::date,
-
     NULLIF(TRIM(im.RequestedBy), ''),
-
     CASE 
         WHEN NULLIF(TRIM(im.RequstedByContactNo), '') IS NOT NULL 
         THEN '+91' || LEFT(TRIM(im.RequstedByContactNo), 12)
@@ -1212,40 +1183,26 @@ SELECT
         )
         ELSE NULL
     END,
-
     NULLIF(TRIM(im.RequstedByEmailId), ''),
-
     COALESCE(im.NetAmount, 0),
-
     im.DocumentSerialNo,
-
     NULLIF(TRIM(im.Remark), ''),
-
     im.AuthGrpRevisionNo,
-
     sm.new_status_id,
-
     COALESCE(im.CreatedBy, 1),
-
     COALESCE(
         migration.parse_sqlserver_datetime(im.CreatedDate),
         now()
     ),
-
     im.ModifiedBy,
-
     COALESCE(
         migration.parse_sqlserver_datetime(im.ModifiedDate),
         migration.parse_sqlserver_datetime(im.CreatedDate),
         now()
     ),
-
     im.AuthorizedBy,
-
     migration.parse_sqlserver_datetime(im.AuthorizedDate),
-
     TRUE
-
 FROM sqlserver_fdw.indentmain im
 INNER JOIN migration.status_mapping sm
     ON sm.old_status_id = im.StatusNo;
@@ -1470,7 +1427,6 @@ SELECT
     cs.AuthorizedBy,
     migration.parse_sqlserver_datetime(cs.AuthorizedDate)
 FROM sqlserver_fdw.csmain cs
-WHERE auctionNo IS NULL;
 
 ----- Company Detail -------
 CREATE FOREIGN TABLE sqlserver_fdw.cscompanydetail
@@ -1491,13 +1447,10 @@ INSERT INTO purchase.cs_company_detail
 )
 SELECT
     ccd.CSNo,
-
     ccd.CompanyNo
-
 FROM sqlserver_fdw.cscompanydetail ccd
 INNER JOIN  sqlserver_fdw.csmain csm
 ON csm.csNo = ccd.csNo
-Where csm.auctionNo IS Null;
 
 
 ----- Quotation Participation Detail -----
@@ -1527,17 +1480,12 @@ INSERT INTO purchase.cs_quotation_participation_detail
 OVERRIDING SYSTEM VALUE
 SELECT
     cqd.QQuotationNo,
-
     cqd.CSNo,
-
     cqd.RevisedQuotationNo,
-
     NULL
-
 FROM sqlserver_fdw.csquotationdetail cqd
 INNER JOIN  sqlserver_fdw.csmain csm
-ON csm.csNo = cqd.csNo
-Where csm.auctionNo IS Null;
+ON csm.csNo = cqd.csNo;
 
 
 ----CS Quotation Detail------
@@ -1556,23 +1504,21 @@ SELECT
     cqd.RevisedQuotationNo AS quotation_id,
     CASE WHEN cqd.itemNo IS NOT NULL THEN qid.id ELSE NULL END AS quotation_item_detail_id,
     CASE WHEN cqd.itemNo IS NOT NULL THEN cqd.Quantity ELSE NULL END AS qty
-FROM sqlserver_fdw.csquotationdetail cqd where cqd.isselected is true
-INNER JOIN sqlserver_fdw.csmain csm
-    ON csm.csNo = cqd.csNo
+FROM sqlserver_fdw.csquotationdetail cqd
 LEFT JOIN purchase.quotation_item_detail qid
     ON qid.item_id = cqd.itemNo 
-    AND COALESCE(cqd.makeNo,0) = COALESCE(qid.make_id,0)
+    AND COALESCE(cqd.makeNo,0) = COALESCE(qid.rfq_make_id,0)
     AND qid.quotation_id = cqd.RevisedQuotationNo
-WHERE csm.auctionNo IS NULL
-  AND cqd.isSelected IS TRUE
+WHERE cqd.isSelected IS TRUE
   AND cqd.RevisedQuotationNo IS NOT NULL
   AND EXISTS (
       SELECT 1 FROM purchase.quotation_main q WHERE q.id = cqd.RevisedQuotationNo
   );
 
 
+
 ----- CS Pr Detail -----
-CREATE FOREIGN TABLE select * from sqlserver_fdw.csindentdetail
+CREATE FOREIGN TABLE sqlserver_fdw.csindentdetail
 (
     CSIndentDetailNo      integer,
     IndentNo              integer,
@@ -1622,17 +1568,15 @@ INNER JOIN sqlserver_fdw.csmain csm
 INNER JOIN inventory.purchase_request_item_detail prid
     ON prid.pur_req_id = cid.IndentNo
     AND prid.line_no = cid.IndentItemLineNo
-    AND prid.item_id = cid.ItemNo
-    AND COALESCE(prid.make_id,0) = COALESCE(cid.MakeNo,0)
 LEFT JOIN purchase.quotation_item_detail qid
     ON qid.item_id = cid.ItemNo
-    AND COALESCE(qid.make_id,0) = COALESCE(cid.MakeNo,0)
+    AND COALESCE(qid.rfq_make_id,0) = COALESCE(cid.MakeNo,0)
     AND qid.quotation_id = cid.RevisedQuotationNo
-WHERE csm.auctionNo IS NULL
-  AND cid.RevisedQuotationNo IS NOT NULL
+WHERE cid.RevisedQuotationNo IS NOT NULL
   AND EXISTS (
       SELECT 1 FROM purchase.quotation_main q WHERE q.id = cid.RevisedQuotationNo
   );
+
 
 
 ---- CS Reason Detail -----
@@ -1669,7 +1613,7 @@ WHERE EXISTS (
 ----- Cs Rank Detail -----
 
 
-CREATE FOREIGN TABLE select * from sqlserver_fdw.csl1detail
+CREATE FOREIGN TABLE sqlserver_fdw.csl1detail
 (
     CSL1DetailNo        integer,
     CSNo                integer,
@@ -1711,12 +1655,12 @@ SELECT
     csl.Rate AS rate,
     csl.Rate AS basic_rate_after_discount,
     0 AS net_amount
-select count(*) FROM sqlserver_fdw.csl1detail csl
+FROM sqlserver_fdw.csl1detail csl
 INNER JOIN purchase.cs_main csm
     ON csm.id = csl.CSNo
 LEFT JOIN purchase.quotation_item_detail qid
     ON qid.item_id = csl.ItemNo
-    AND COALESCE(qid.make_id,0) = COALESCE(csl.MakeNo,0)
+    AND COALESCE(qid.rfq_make_id,0) = COALESCE(csl.MakeNo,0)
     AND qid.quotation_id = csl.RevisedQuotationNo
 WHERE csl.RevisedQuotationNo IS NOT NULL
   AND EXISTS (
@@ -2049,7 +1993,6 @@ VALUES
 (86, 3, 'MC00086', 'IGST @12%', 12.0000, 1, 'IGST', 2, 'Deprecated', 1, NOW(), NULL, NOW()),
 (81, 3, 'MC00081', 'IGST @18', 18.0000, 1, 'IGST', 1, NULL, 1, NOW(), 1, NOW()),
 (84, 3, 'MC00084', 'IGST @28', 28.0000, 1, 'IGST', 1, NULL, 1, NOW(), 1, NOW()),
-
 --SGST--
 (93, 2, 'MC00092', 'SGST @ 0%', 0.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
 (102, 2, 'MC00097', 'SGST @1.5%', 1.5000, 1, 'SGST', 1, NULL, 1, NOW(), NULL, NOW()),
@@ -2057,7 +2000,6 @@ VALUES
 (82, 2, 'MC00082', 'SGST @ 6%', 6.0000, 1, 'SGST', 2, 'Deprecated', 1, NOW(), 1, NOW()),
 (75, 2, 'MC00075', 'SGST @ 9%', 9.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
 (83, 2, 'MC00083', 'SGST @ 14%', 14.0000, 1, 'SGST', 1, NULL, 1, NOW(), 1, NOW()),
-
 --UGST--
 (95, 4, 'MC00094', 'UTGST @ 0%', 0.0000, 1, 'UTGST', 1, NULL, 1, NOW(), 1, NOW()),
 (88, 4, 'MC00087', 'UTGST @ 2.5%', 2.5000, 1, 'UTGST', 1, NULL, 1, NOW(), 1, NOW()),
@@ -2141,8 +2083,8 @@ SELECT
         WHEN 1 THEN 103
         WHEN 2 THEN 105
         WHEN 3 THEN 104
-    		WHEN 4 THEN 106
-    		WHEN 5 THEN 107
+    	WHEN 4 THEN 106
+    	WHEN 5 THEN 107
     END AS tax_id,
     2 AS charge_type_id,
     2 AS charge_on_id,
@@ -2496,10 +2438,20 @@ OVERRIDING SYSTEM VALUE
 SELECT
     6                                                           AS form_id,
     pr.id                                                       AS doc_id,
-    pr.approval_setup_id                                        AS approval_setup_id,
+    COALESCE(pr.approval_setup_id,120)                          AS approval_setup_id,
     0                                                           AS revision_no,
     true                                                        AS is_current,
-    sm.new_status_id                                            AS status_id,
+    CASE
+    WHEN pr.document_status_id = 30 THEN 9
+    WHEN pr.document_status_id = 10
+         AND EXISTS (
+             SELECT 1
+             FROM sqlserver_fdw.indentauthorizationdetail iad2
+             WHERE iad2.IndentNo = pr.id
+               AND iad2.StatusNo = 1
+         ) THEN 14
+    WHEN pr.document_status_id = 10 THEN 7
+    END                                                         AS status_id,
     pr.created_by_id                                            AS created_by_id,
     pr.created_date         AS created_date,
     pr.modified_by_id                                           AS modified_by_id,
@@ -2520,12 +2472,9 @@ JOIN sqlserver_fdw.indentauthorizationdetail iad
     ON iad.IndentNo = pr.id
 LEFT JOIN action_cte ac
     ON ac.IndentNo = pr.id
-INNER JOIN migration.status_mapping sm
-    ON sm.old_status_id = pr.status_id
 GROUP BY
     pr.id,
     pr.approval_setup_id,
-    sm.new_status_id,
     pr.created_by_id,
     pr.created_date,
     pr.modified_by_id,
@@ -2604,6 +2553,7 @@ OPTIONS (
     table_name 'POAmendmentAuthorizationDetail'
 );
 
+----- Insert Main ---- (po)
 WITH action_cte AS (
     SELECT DISTINCT ON (pad.POAmendmentNo)
         pad.POAmendmentNo,
@@ -2644,7 +2594,17 @@ SELECT
     pom.approval_setup_id                                           AS approval_setup_id,
     0                                                               AS revision_no,
     true                                                            AS is_current,
-    sm.new_status_id                                                AS status_id,
+    CASE
+    WHEN pom.document_status_id = 30 THEN 9
+    WHEN pom.document_status_id = 10
+         AND EXISTS (
+             SELECT 1
+             FROM sqlserver_fdw.poamendmentauthorizationdetail pad2
+             WHERE pad2.poAmendmentNo = pom.id
+               AND pad2.StatusNo = 1
+         ) THEN 14
+    WHEN pom.document_status_id = 10 THEN 7
+    END                                                             AS status_id,
     pom.created_by_id                                               AS created_by_id,
     pom.created_date                                                AS created_date,
     pom.modified_by_id                                              AS modified_by_id,
@@ -2671,7 +2631,6 @@ INNER JOIN migration.status_mapping sm
 GROUP BY
     pom.id,
     pom.approval_setup_id,
-    sm.new_status_id,
     pom.created_by_id,
     pom.created_date,
     pom.modified_by_id,
@@ -2683,6 +2642,9 @@ GROUP BY
     ac.action_by_id,
     ac.action_date;
 
+
+
+-----Detail-----
 
 INSERT INTO utility.approval_process_detail (
     approval_process_id,
@@ -2709,7 +2671,11 @@ SELECT
         COALESCE(pad.ModifiedDate, pad.LastModifiedDate)
     )                                                               AS modified_date,
     pad.ModifiedBy                                                  AS modified_by,
-    sm.new_status_id                                                AS status_id,
+	CASE
+	WHEN pad.StatusNo = 1 THEN 12
+	WHEN pad.StatusNo = 5 THEN 3
+	WHEN pad.StatusNo = 17 THEN 19 
+	END                                                             AS status_id,
     COALESCE(
         NULLIF(TRIM(pad.Comment), ''),
         NULLIF(TRIM(pad.LastComment), '')
@@ -2721,11 +2687,8 @@ FROM sqlserver_fdw.poamendmentauthorizationdetail pad
 JOIN utility.approval_process_main apm
     ON apm.doc_id = pad.POAmendmentNo
     AND apm.form_id = 10
-INNER JOIN migration.status_mapping sm
-    ON sm.old_status_id = pad.StatusNo
 LEFT JOIN masterdata.approval_setup_level_detail alm
     ON alm.approval_setup_id = apm.approval_setup_id
     AND alm.level_no = pad.LevelNo;
-
 
 ------------------------------------------

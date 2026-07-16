@@ -16,9 +16,7 @@ options
     table_name 'mCSReasonMaster'
 );
 
-insert
-	into
-	masterdata.reason_master
+insert into masterdata.cs_reason_master
 (
     id,
 	reason_name,

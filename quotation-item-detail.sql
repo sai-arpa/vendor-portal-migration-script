@@ -1,4 +1,3 @@
-BEGIN;
  CREATE FOREIGN TABLE IF NOT EXISTS sqlserver_fdw.revisedquotationitemdetail
  (
      RevisedQuotationItemNo INTEGER,
@@ -55,7 +54,7 @@ SELECT
     rqid.RevisedQuotationItemNo,
     rqid.RevisedQuotationNo,
     rqid.RFQItemLineNo,
-    COALESCE(rfqi.id,275703),
+    COALESCE(rfqi.id,null),
     rqid.ItemNo,
     LEFT(TRIM(COALESCE(rqid.HSNSACCode,'')),10),
     rqid.RFQMakeNo,
@@ -95,4 +94,5 @@ UPDATE purchase.quotation_item_detail qid
 SET line_no = cte.new_line_no
 FROM cte
 WHERE qid.id = cte.id;
-COMMIT;
+
+

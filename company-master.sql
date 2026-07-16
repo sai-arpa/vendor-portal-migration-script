@@ -63,7 +63,6 @@ INSERT INTO masterdata.company_master
     corporate_office_contact_no_country_id,
     corporate_office_email,
     country_id,
-    db_config_id,
     email,
     erp_company_unique_id,
     full_address,
@@ -80,7 +79,8 @@ INSERT INTO masterdata.company_master
     tally_company_name,
     tally_godown_name,
     website,
-    time_zones_id
+    time_zones_id,
+    db_master_id
 )
 OVERRIDING SYSTEM VALUE
 SELECT
@@ -135,8 +135,7 @@ SELECT
         ELSE NULL
     END,
     LEFT(TRIM(CorporateOfficeEmail), 100),
-    CountryNo,
-    null as db_config_id,
+    case when CountryNo = 1 then 3 else CountryNo end,
     LEFT(TRIM(Email), 320),
     LEFT(TRIM(ERPCompanyCode), 50),
     LEFT(
@@ -174,7 +173,8 @@ SELECT
     LEFT(TRIM(TallyCompanyName), 100),
     LEFT(TRIM(TallyGodownName), 100),
     LEFT(TRIM(Website), 150),
-    1::smallint AS time_zones_id
+    1::smallint AS time_zones_id,
+    dbno as db_master_id
 FROM sqlserver_fdw.mcompanymaster;
 
 

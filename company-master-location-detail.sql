@@ -45,23 +45,23 @@ SELECT
     NULL AS address3,
     c.city_id,
     c.state_id,
-    c.country_id,
+    coalesce(c.country_id, (select max(country_id) from masterdata.country_master where country_name = 'India')),
     NULL AS pincode,
     LEFT(COALESCE(m.ShippingAddress, ''), 500) AS full_address,
     CASE 
-        WHEN NULLIF(TRIM(c.ContactNo), '') IS NOT NULL 
-        THEN '+91' || LEFT(TRIM(c.ContactNo), 12)
-        ELSE NULL 
+        WHEN NULLIF(TRIM(c.contact_no), '') IS NOT NULL 
+        THEN '+91' || LEFT(TRIM(c.contact_no), 12)
+        ELSE '+91' 
     END,
     CASE
-        WHEN NULLIF(TRIM(c.ContactNo), '') IS NOT NULL
+        WHEN NULLIF(TRIM(c.contact_no), '') IS NOT NULL
         THEN (
             SELECT cm.id
             FROM masterdata.country_master cm
             WHERE LOWER(cm.country_name) = 'india'
             LIMIT 1
         )
-        ELSE NULL
+        ELSE null
     END,
     COALESCE(m.IsDefault, FALSE),
     1::smallint AS status_id,

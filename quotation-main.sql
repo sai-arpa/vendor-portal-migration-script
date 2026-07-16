@@ -42,59 +42,6 @@ OPTIONS
 );
 
 
-SELECT
-    rqm.RevisedQuotationNo,
-    rqm.RFQNo,
-    rqm.VendorLocationNo,
-    rqm.AuctionNo,
-    rvd.id AS rfq_vendor_detail_id
-FROM sqlserver_fdw.revisedquotationmain rqm
-LEFT JOIN purchase.pur_rfq_vendor_detail rvd
-    ON rvd.rfq_id = rqm.RFQNo
-   AND rvd.vendor_location_id = rqm.VendorLocationNo
-WHERE rqm.AuctionNo IS NULL
-  AND rvd.id IS NULL;
-
--- insert vendor rows in rfq vendor detail --
-INSERT INTO purchase.pur_rfq_vendor_detail
-(
-    rfq_id,
-    public_id,
-    is_guest_vendor,
-    user_id,
-    vendor_location_id,
-    guest_vendor_email,
-    guest_vendor_name,
-    quotation_status_id,
-    created_by_id,
-    created_date,
-    last_mail_sent_on
-)
-SELECT DISTINCT
-    rqm.RFQNo,
-    gen_random_uuid(),
-    FALSE,
-    1,
-    rqm.VendorLocationNo,
-    NULL,
-    NULL,           -- guest_vendor_name
-    8,              -- quotation_status_id
-    1,
-    now(),
-    NULL::timestamptz
-FROM sqlserver_fdw.revisedquotationmain rqm
-LEFT JOIN purchase.pur_rfq_vendor_detail rvd
-    ON rvd.rfq_id = rqm.RFQNo
-   AND rvd.vendor_location_id = rqm.VendorLocationNo
-WHERE rqm.AuctionNo IS NULL
-  AND rvd.id IS NULL;
-
-
-INSERT INTO purchase.pur_rfq_vendor_detail
-(id, rfq_id, public_id, is_guest_vendor, user_id, vendor_location_id, guest_vendor_email, guest_vendor_name, quotation_status_id, created_by_id, created_date, last_mail_sent_on)
-overriding system value
-VALUES(229513, 58906, '4eb93ab1-6bb7-4037-b956-2cb53ad1d868', false, 1, 764, null, null, 8, 1, now(), null);
-
 INSERT INTO purchase.quotation_main
 (
     id,
@@ -132,7 +79,7 @@ OVERRIDING SYSTEM VALUE
 SELECT
     rqm.RevisedQuotationNo,
     rqm.RFQNo,
-    case when rqm.auctionNo is not null then 229513 else rvd.id end,
+    case when rqm.auctionNo is not null then null else rvd.id end,
     NULL,
     NULL,
     NULL,
@@ -201,3 +148,20 @@ FROM (
     FROM sqlserver_fdw.revisedquotationmain
 ) x
 WHERE qm.id = x.RevisedQuotationNo;
+
+update purchase.quotation_main qm 
+set qm.is_current=true
+where qm.revision_no =0
+
+UPDATE purchase.quotation_main pom
+SET is_current = TRUE
+FROM
+(
+    SELECT
+        main_quotation_id ,
+        MAX(revision_no ) AS max_amendment_no
+    FROM purchase.quotation_main
+    GROUP BY main_quotation_id 
+) x
+WHERE pom.main_quotation_id = x.main_quotation_id
+  AND pom.revision_no = x.max_amendment_no;
