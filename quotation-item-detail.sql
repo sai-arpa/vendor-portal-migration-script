@@ -96,3 +96,15 @@ SET line_no = cte.new_line_no
 FROM cte
 WHERE qid.id = cte.id;
 COMMIT;
+
+
+--- Check for rfq_item_detail_id 
+UPDATE purchase.quotation_item_detail qid
+SET rfq_item_detail_id = rid.id
+FROM purchase.quotation_main qm
+JOIN purchase.pur_rfq_item_detail rid
+    ON rid.rfq_id = qm.rfq_id
+WHERE qid.quotation_id = qm.id
+  AND qm.rfq_id IS NOT NULL
+  AND rid.item_id = qid.item_id
+  AND rid.make_id IS NOT DISTINCT FROM qid.rfq_make_id;
