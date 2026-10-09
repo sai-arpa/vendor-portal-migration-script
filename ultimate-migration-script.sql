@@ -8445,79 +8445,48 @@ inner join purchase.auction_item_detail aid
 	aid.item_id = qid.item_id and
 	aid.make_id = qid.rfq_make_id
 
-FROM sqlserver_fdw.revisedquotationitemdetail rqi
-INNER JOIN sqlserver_fdw.revisedquotationmain rqm
-    ON rqm.revisedquotationno = rqi.revisedquotationno
-INNER JOIN purchase.auction_main am
-    ON am.id = rqm.auctionno
-INNER JOIN purchase.rfq_item_detail rid
-    ON rid.rfq_id = am.generated_rfq_id
-   -- item matching conditions here
-WHERE qid.id = rqi.revisedquotationitemdetailno
-  AND qid.rfq_item_detail_id IS NULL
-  AND am.generated_rfq_id IS NOT NULL;
+update purchase.quotation_item_detail
+set item_id = 2242
+where id =
 
-SELECT
-    qid.id AS quotation_item_id,
-    qid.quotation_id,
-    qid.line_no,
-    qid.item_id,
-    qid.rfq_make_id,
-    r.auctionno,
-    am.generated_rfq_id,
-    aid.id AS auction_item_detail_id,
-    rid.id AS rfq_item_detail_id,
-    rid.line_no AS rfq_line_no
-select count(*) FROM purchase.quotation_item_detail qid
-INNER JOIN sqlserver_fdw.revisedquotationmain r
-    ON r.revisedquotationno = qid.quotation_id
-INNER JOIN purchase.auction_main am
-    ON am.id = r.auctionno
-   AND am.generated_rfq_id IS NOT NULL
-INNER JOIN purchase.auction_item_detail aid
-    ON aid.auction_id = am.id
-   AND aid.item_id = qid.item_id
-   AND aid.make_id IS NOT DISTINCT FROM qid.rfq_make_id
-INNER JOIN purchase.pur_rfq_item_detail rid
-    ON rid.rfq_id = am.generated_rfq_id
-   AND rid.item_id = aid.item_id
-   AND rid.make_id IS NOT DISTINCT FROM aid.make_id;
+update purchase.cs_pr_detail
+set item_id = 2242
+where id ;
 
-SELECT
-    qid.id AS quotation_item_id,
-    qid.quotation_id,
-    qid.line_no,
-    qid.item_id,
-    qid.rfq_make_id,
-    r.auctionno,
-    am.generated_rfq_id,
-    aid.id AS auction_item_detail_id,
-    aid.item_id AS aid_item_id,
-    aid.make_id AS aid_make_id,
-    rid.id AS rfq_item_detail_id,
-    rid.line_no AS rfq_line_no,
-    rid.item_id AS rid_item_id,
-    rid.make_id AS rid_make_id
-FROM purchase.quotation_item_detail qid
-INNER JOIN sqlserver_fdw.revisedquotationmain r
-    ON r.revisedquotationno = qid.quotation_id
-INNER JOIN purchase.auction_main am
-    ON am.id = r.auctionno
-LEFT JOIN purchase.auction_item_detail aid
-    ON aid.auction_id = am.id
-   AND aid.item_id = qid.item_id
-   AND aid.make_id IS NOT DISTINCT FROM qid.rfq_make_id
-LEFT JOIN purchase.pur_rfq_item_detail rid
-    ON rid.rfq_id = am.generated_rfq_id
-   AND rid.item_id = qid.item_id
-   AND rid.make_id IS NOT DISTINCT FROM qid.rfq_make_id
-WHERE qid.id IN (152461, 152466, 152473, 152477, 152484)
-ORDER BY qid.id;
+select * from purchase.quotation_item_detail qid
+inner join sqlserver_fdw.revisedQuotationItemDetail rqid
+on rqid.revisedQuotationItemNo= qid.id
+where rqid.itemNo<>qid.item_id
 
-select * from purchase.auction_item_detail aid 
-where aid.auction_id=210
-and aid.item_id =2252
-and aid.make_id =null
+select
+	qid.id,
+	rqm.auctionno,
+	aid.id ,
+	aid.generated_rfq_item_detail_id
+from
+	purchase.quotation_item_detail qid
+inner join sql_migration.revisedquotationmain rqm
+    on
+	rqm.revisedquotationno = qid.quotation_id
+	--where rqm.auctionno is not null
+left join purchase.auction_item_detail aid 
+on
+	aid.auction_id = rqm.auctionno
+	and aid.item_id = qid.item_id
+	and coalesce(aid.make_id, 0) = coalesce(qid.rfq_make_id, 0)
+where
+	rqm.auctionno is not null
+	and aid.id is null
+
+select im.item_name from masterdata.item_master im 
+where im.id in (2224,2333,19059,52564, 2252)
+
+select * from purchase.quotation_item_detail where id=152461;
+
+select * from purchase.auction_item_detail where auction_id =210;
+
+
+
 
 --verify
 --select count(*) from purchase.quotation_main qm 
