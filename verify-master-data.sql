@@ -1,0 +1,345 @@
+-- Verification Script for Master Data Migration
+
+WITH verification_data AS (
+    SELECT
+        'Approval Setup Doc Type Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mauthorizationgroup) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.approval_setup_doc_type_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Approval Setup Level Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mauthorizationgroupdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.approval_setup_level_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Approval Setup Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mauthorizationgroup) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.approval_setup_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Approval Setup Org Unit Detail' AS table_name,
+        'Row Count' AS metric,
+        select (SELECT COUNT(1) FROM sqlserver_fdw.mauthgrprevisioncompanydetail) + (SELECT COUNT(1) FROM sqlserver_fdw.mauthgrprevisiondivdeptdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.approval_setup_org_unit_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Approval Setup User Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mauthorizationgroupdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.approval_setup_user_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Business Type Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorbusinesstypemaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.business_type_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Category Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcategorymaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.category_master) AS destination_value
+    UNION ALL
+    SELECT
+        'City Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcitymaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.city_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Company Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcompanymaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.company_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Company Master Location Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcompanymasterlocationdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.company_master_location_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Cost Center Company Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcostcentercompanydetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.cost_center_company_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Cost Center Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcostcentermaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.cost_center_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Country Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcountrymaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.country_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Cs Reason Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mcsreasonmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.cs_reason_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Db Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mdbmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.db_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Department Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mdeptmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.department_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Division Company Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mdivisionmastercompanydetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.division_company_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Division Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mdivisionmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.division_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Doc Type Company Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.doc_type_company_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Doc Type Master' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.doc_type_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Company Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_company_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Division Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_division_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Doc Type Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_doc_type_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Form Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_form_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Master' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Document Series Next Number' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.document_series_next_number) AS destination_value
+    UNION ALL
+    SELECT
+        'Erp Doc Serial Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.documentserial) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.erp_doc_serial_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Fin Year' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mfyear) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.fin_year) AS destination_value
+    UNION ALL
+    SELECT
+        'Group Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mgroupmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.group_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Item Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mitemmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.item_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Item Master Unit Conversion Detail' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.item_master_unit_conversion_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Location Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mlocationmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.location_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Make Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mmakemaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.make_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Priority Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mprioritymaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.priority_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Region Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mregionmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.region_master) AS destination_value
+    UNION ALL
+--    SELECT
+--        'Role Form Rights' AS table_name,
+--        'Row Count' AS metric,
+--        (SELECT COUNT(1) FROM sqlserver_fdw.mrolemasterformdetail) AS source_value,
+--        (SELECT COUNT(1) FROM masterdata.role_form_rights) AS destination_value
+--    UNION ALL
+    SELECT
+        'Role Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mrolemaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.role_master) AS destination_value
+    UNION ALL
+    SELECT
+        'State Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mstatemaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.state_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Subgroup Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.msubgroupmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.subgroup_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Tax Master' AS table_name,
+        'Row Count' AS metric,
+        NULL::bigint AS source_value,
+        (SELECT COUNT(1) FROM masterdata.tax_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Terms N Condition Group Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mtermsnconditiongroupdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.terms_n_condition_group_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Terms N Condition Group Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mtermsnconditiongroup) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.terms_n_condition_group_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Terms N Condition Head Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mtermsnconditionhead) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.terms_n_condition_head_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Unit Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.munitmaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.unit_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Category' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendortypemaster) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_category) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Location Bank Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorlocationbankdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_location_bank_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Location Contact Person Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorlocationcontactdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_location_contact_person_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Location Item Group Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendoritemgroupdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_location_item_group_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Master' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorcard) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_master) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Master Location Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorlocationdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_master_location_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Reg Location Bank Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorregistrationbankdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_reg_location_bank_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Reg Location Contact Person Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorregistrationcontactdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_reg_location_contact_person_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Reg Location Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorregistrationlocationdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_reg_location_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Reg Location Item Group Detail' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorregistrationgroupdetail) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_reg_location_item_group_detail) AS destination_value
+    UNION ALL
+    SELECT
+        'Vendor Registration' AS table_name,
+        'Row Count' AS metric,
+        (SELECT COUNT(1) FROM sqlserver_fdw.mvendorregistration) AS source_value,
+        (SELECT COUNT(1) FROM masterdata.vendor_registration) AS destination_value
+)
+SELECT 
+    table_name AS "Table Name",
+    metric AS "Metric",
+    source_value AS "Source Value (SQL Server)",
+    destination_value AS "Destination Value (PostgreSQL)",
+    CASE 
+        WHEN source_value IS NULL THEN 'N/A (No Source)'
+        WHEN source_value = destination_value THEN 'MATCH'
+        ELSE 'MISMATCH'
+    END AS "Status"
+FROM verification_data
+ORDER BY table_name;

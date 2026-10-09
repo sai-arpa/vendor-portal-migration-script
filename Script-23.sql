@@ -1,0 +1,1 @@
+select count(*) from (select distinct p.poamendmentindentdetailno from sqlserver_fdw.poamendmentindentdetail p)

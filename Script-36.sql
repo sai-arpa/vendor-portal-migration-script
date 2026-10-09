@@ -1,0 +1,1 @@
+select distinct apd.level_no from utility.approval_process_detail apd 

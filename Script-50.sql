@@ -1,0 +1,1 @@
+select * from purchase.quotation_item_detail qid

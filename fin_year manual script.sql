@@ -1,0 +1,36 @@
+INSERT INTO masterdata.fin_year (
+    id, code, name, alias, short_alias, start_date, end_date,
+    pre_fin_year_id, next_fin_year_id,
+    status_id, status_remarks,
+    created_by_id, created_date, modified_by_id, modified_date
+)
+OVERRIDING SYSTEM VALUE
+VALUES
+    (1,  'FY0001', '13-Dec', '13-Dec', '13-Dec', DATE '2012-04-01', DATE '2013-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (2,  'FY0002', '13-14',  '13-14',  '13-14',  DATE '2013-04-01', DATE '2014-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (3,  'FY0003', '14-15',  '14-15',  '14-15',  DATE '2014-04-01', DATE '2015-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (4,  'FY0004', '15-16',  '15-16',  '15-16',  DATE '2015-04-01', DATE '2016-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (5,  'FY0005', '16-17',  '16-17',  '16-17',  DATE '2016-04-01', DATE '2017-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (6,  'FY0006', '17-18',  '17-18',  '17-18',  DATE '2017-04-01', DATE '2018-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (7,  'FY0007', '18-19',  '18-19',  '18-19',  DATE '2018-04-01', DATE '2019-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (8,  'FY0008', '19-20',  '19-20',  '19-20',  DATE '2019-04-01', DATE '2020-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (9,  'FY0009', '20-21',  '20-21',  '20-21',  DATE '2020-04-01', DATE '2021-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (10, 'FY0010', '21-22',  '21-22',  '21-22',  DATE '2021-04-01', DATE '2022-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (11, 'FY0011', '22-23',  '22-23',  '22-23',  DATE '2022-04-01', DATE '2023-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (12, 'FY0012', '23-24',  '23-24',  '23-24',  DATE '2023-04-01', DATE '2024-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (13, 'FY0013', '24-25',  '24-25',  '24-25',  DATE '2024-04-01', DATE '2025-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (14, 'FY0014', '25-26',  '25-26',  '25-26',  DATE '2025-04-01', DATE '2026-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00'),
+    (15, 'FY0015', '26-27',  '26-27',  '26-27',  DATE '2026-04-01', DATE '2027-03-31', NULL, NULL, 1, NULL, 1, TIMESTAMPTZ '2026-08-20 00:00:00+00', 1, TIMESTAMPTZ '2026-08-20 00:00:00+00')
+ON CONFLICT (id) DO UPDATE SET
+    code           = EXCLUDED.code,
+    name           = EXCLUDED.name,
+    alias          = EXCLUDED.alias,
+    short_alias    = EXCLUDED.short_alias,
+    start_date     = EXCLUDED.start_date,
+    end_date       = EXCLUDED.end_date,
+    status_id      = EXCLUDED.status_id,
+    status_remarks = EXCLUDED.status_remarks,
+    created_by_id  = EXCLUDED.created_by_id,
+    created_date   = EXCLUDED.created_date,
+    modified_by_id = EXCLUDED.modified_by_id,
+    modified_date  = EXCLUDED.modified_date;

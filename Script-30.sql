@@ -1,0 +1,1 @@
+select * from purchase.quotation_main qm where qm.rfq_id = 58906
